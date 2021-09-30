@@ -17,7 +17,7 @@ if (isset($_GET['page'])) {
 	$input = $pdo->prepare('INSERT INTO bddv_show (nama, m3u8, key_auth) VALUES (?, ?, ?)')->execute([
 	    $_POST['name'],
 	    $_POST['m3u8'],
-	    $_POST['key'],
+	    (empty($_POST['key']) ? NULL : $_POST['key']),
 	]);
 
 	if ($input) {
@@ -83,15 +83,7 @@ if (isset($_GET['page'])) {
 
 	<link rel="stylesheet" href="assets/bootstrap.min.css">
 	<link rel="stylesheet" href="assets/bootstrap-icons.css">
-	<style>
-	 body {
-	     font-size:18px;
-	     font-family: -apple-system,BlinkMacSystemFont,Helvetica Neue,Eina 04,system-ui,Segoe UI,Roboto,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
-	 }
-	 h1, h2,h3, h4, h5 {
-	     font-family: 'DM Sans', sans-serif;
-	 }
-	</style>
+	<link rel="stylesheet" href="assets/main.css">
 	
 	<title>Dashboard - HLSRipple</title>
     </head>

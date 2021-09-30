@@ -12,7 +12,7 @@
 
 	<div class="form-group mb-3">
 	    <div class="mb-2 w-100"><label class="text-muted">Key Auth (base64)</label></div>
-	    <input type="text" class="form-control" name="key" placeholder="Key Auth (base64) / Empty if direct" required>
+	    <input type="text" class="form-control" name="key" placeholder="Key Auth (base64) / Empty if direct">
 	</div>
 
 	<div class="d-grid gap-1 d-md-flex pb-2">
@@ -58,7 +58,7 @@
 		     document.getElementById('table_body').innerHTML = '';
 		     data.data.forEach(function (ele) {
 
-			 document.getElementById('table_body').innerHTML += '<tr><td>' + ele.nama + '</td><td>' + ele.m3u8 + '</td><td><button type="button" class="btn btn-sm btn-danger" data-id="' + ele.id  + '" name="btnHapus">Hapus</button></td></tr>';
+			 document.getElementById('table_body').innerHTML += '<tr><td>' + ele.nama + '</td><td>' + ele.m3u8 + '</td><td><a target="_blank" class="btn btn-sm btn-success" href="<?php echo $config['domain']; ?>/show.php?id=' + ele.id + '">Show embed</a> <button type="button" class="btn btn-sm btn-danger" data-id="' + ele.id  + '" name="btnHapus">Hapus</button></td></tr>';
 			 
 		     })
 
@@ -177,8 +177,8 @@
 	 'm3u8=' + encodeURIComponent(document.getElementsByName('m3u8')[0].value),
 	 'key=' + encodeURIComponent(document.getElementsByName('key')[0].value)
      ].join('&'));
-     
-     
+			 
+			 
  });
      
 </script>

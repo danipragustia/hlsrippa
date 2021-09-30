@@ -50,10 +50,21 @@
 		 var data = JSON.parse(this.response);
 		 if (data.status == 0) {
 
+		     if (data.show.length === 0) {
+			 document.getElementById('id_show').disabled = true;
+			 document.getElementById('button-generate-token').disabled = true;
+		     } else {
+			 document.getElementById('id_show').innerHTML = '';
+			 data.show.forEach(function(show) {
+			     document.getElementById('id_show').innerHTML += '<option value="' + show.id + '">' + show.name + '</option>';
+			 });
+			 document.getElementById("field_generate_token").disabled = false;
+		     }
+
 		     document.getElementById('table_body').innerHTML = '';
 		     data.data.forEach(function (ele) {
 
-			 document.getElementById('table_body').innerHTML += '<tr><td>' + ele.token + '</td><td>' + ele.show + '</td><td><button type="button" class="btn btn-sm btn-danger" data-id="' + ele.id  + '" name="btnHapus">Hapus</button></td></tr>';
+			 document.getElementById('table_body').innerHTML += '<tr><td>' + ele.token + '</td><td>' + ele.show_name + '</td><td><button type="button" class="btn btn-sm btn-danger" data-id="' + ele.id  + '" name="btnHapus">Hapus</button></td></tr>';
 			 
 		     })
 
@@ -159,7 +170,7 @@
 
 		 var data = JSON.parse(this.response);
 		 if (data.status == 0) {
-		     show_alert('success', (typeof data.text !== null ? data.text : '<h4 class="alert-heading">Success Generate Token</h4><p>Here new token was generate</p><code>' + data.code + '</code><hr><p><b>Only 1 Device per token can be watch</b></p>'));
+		     show_alert('success', (typeof data.code !== null ? '<h4 class="alert-heading">Success Generate Token</h4><p>Here new token for selected show</p><code>' + data.code + '</code><hr><p><b>Only 1 device per token can be watch</b></p>' : 'Success generate token'));
 		     refresh_data();
 		 } else {
 		     show_alert('danger', (typeof data.text !== null ? data.text : 'Failed to generate token'));
