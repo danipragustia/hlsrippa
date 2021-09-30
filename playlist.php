@@ -5,13 +5,19 @@ if (!isset($_GET['id'])) {
     exit;    
 }
 
+require_once 'hlsrippa.php';
 session_start();
+
 if (!isset($_SESSION['login']) && !isset($_SESSION['token'])) {
     http_response_code(403);
     exit();
 }
 
-require_once 'hlsrippa.php';
+if (intval($pdo->query('SELECT COUNT(id) FROM bwca_token WHERE cur_token = "' . $_SESSION['token'] . '"')->fetchColumn()) === 0) {
+    http_response_code(403);
+    exit();
+}
+
 $data = $pdo->query('SELECT * FROM bddv_show WHERE id = ' . intval($_GET['id']) . ' LIMIT 1')->fetch(PDO::FETCH_ASSOC);
 
 if (empty($data)) {

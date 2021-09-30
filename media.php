@@ -1,5 +1,18 @@
 <?php
 
+session_start();
+require_once 'hlsrippa.php';
+
+if (!isset($_SESSION['login']) && !isset($_SESSION['token'])) {
+    http_response_code(403);
+    exit();
+}
+
+if (intval($pdo->query('SELECT COUNT(id) FROM bwca_token WHERE cur_token = "' . $_SESSION['token'] . '"')->fetchColumn()) === 0) {
+    http_response_code(403);
+    exit();
+}
+
 if (isset($_GET['data'])) {
 
     $ch = curl_init('https://' . base64_decode($_GET['data']));

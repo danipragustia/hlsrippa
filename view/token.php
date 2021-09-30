@@ -64,7 +64,7 @@
 		     document.getElementById('table_body').innerHTML = '';
 		     data.data.forEach(function (ele) {
 
-			 document.getElementById('table_body').innerHTML += '<tr><td>' + ele.token + '</td><td>' + ele.show_name + '</td><td><button type="button" class="btn btn-sm btn-danger" data-id="' + ele.id  + '" name="btnHapus">Hapus</button></td></tr>';
+			 document.getElementById('table_body').innerHTML += '<tr><td>' + ele.token + '</td><td>' + ele.show_name + '</td><td><a target="_blank" class="btn btn-sm btn-success" href="<?php echo $config['domain']; ?>/show.php?token=' + ele.token +' ">Go To link</a> <button type="button" class="btn btn-sm btn-danger" data-id="' + ele.id  + '" name="btnHapus">Hapus</button></td></tr>';
 			 
 		     })
 
