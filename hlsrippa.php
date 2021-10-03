@@ -1,7 +1,8 @@
 <?php
 
 $config = [
-    'domain' => 'http://localhost'
+    'domain' => 'http://localhost',
+    'stream_key' => 'ayam'
 ];
 
 try {

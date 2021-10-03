@@ -3,14 +3,18 @@
 session_start();
 require_once 'hlsrippa.php';
 
-if (!isset($_SESSION['login']) && !isset($_SESSION['token'])) {
-    http_response_code(403);
-    exit();
-}
-
-if (intval($pdo->query('SELECT COUNT(id) FROM bwca_token WHERE cur_token = "' . $_SESSION['token'] . '"')->fetchColumn()) === 0) {
-    http_response_code(403);
-    exit();
+if (isset($_GET['token'])) {
+    if ($_GET['token'] !== $config['stream_key']) {
+	http_response_code(403);
+	exit();
+    }
+} else {
+    if (!isset($_SESSION['user'])) {
+	if (!isset($_SESSION['login'])) {
+	    http_response_code(403);
+	    exit();
+	}
+    }
 }
 
 if (isset($_GET['data'])) {

@@ -38,38 +38,51 @@ if (isset($_GET['page'])) {
 	
     }
 
-    // Token
+    // Accounts
     
-    if (isset($_POST['id_show']) && $_GET['page'] === 'token') {
+    if (isset($_POST['username'], $_POST['password']) && $_GET['page'] === 'user') {
 
-	if (intval($pdo->query('SELECT COUNT(ID) FROM bddv_show WHERE id = ' . intval($_POST['id_show']) . ' LIMIT 1')->fetchColumn()) === 1) {
-	    $tmp_token = bin2hex(random_bytes(20));
-	    $token = $pdo->prepare('INSERT INTO bwca_token (`token`, `show`) VALUES (?, ?)')->execute([
-		$tmp_token,
-		intval($_POST['id_show'])
+	if (intval($pdo->query('SELECT COUNT(ID) FROM xezc_user WHERE username = "' . htmlspecialchars($_POST['username'], ENT_QUOTES | ENT_HTML401) . '" LIMIT 1')->fetchColumn()) === 0) {
+
+	    $register = $pdo->prepare('INSERT INTO xezc_user (username, password) VALUES (?, ?)')->execute([
+		htmlspecialchars($_POST['username'], ENT_QUOTES | ENT_HTML401),
+		password_hash(htmlspecialchars($_POST['password'], ENT_QUOTES | ENT_HTML401), PASSWORD_DEFAULT)
 	    ]);
 
-	    if ($token) {
+	    if ($register) {
 		return_status([
-		    'status' => 0,
-		    'code' => $tmp_token
+		    'status' => 0
 		]);
 	    } else { 
 		return_status([
 		    'status' => 1,
-		    'text' => 'Invalid id show'
+		    'text' => 'Failed to register account'
 		]);
 	    }
 	    
 	} else {
 	    return_status([
 		'status' => 1,
-		'text' => 'Invalid id show'
+		'text' => 'Failed to register account'
 	    ]);
 	}
 	
     }
-    
+
+    // Settings
+    if (isset($_POST['note']) && $_GET['page'] === 'settings') {
+	$update = $pdo->prepare('UPDATE wegy_settings SET value = ? WHERE item = ? LIMIT 1')->execute([
+	    $_POST['note'],
+	    'note'
+	]);
+	
+	if ($update) {
+	    $_SESSION['status'] = 'Success save settings';
+	} else {
+	    $_SESSION['status'] = 'Failed when trying save settings';
+	}
+
+    }    
 }
 
 ?>
@@ -108,9 +121,10 @@ if (isset($_GET['page'])) {
 		    <div class="col-lg-6 align-self-end">
 
 			<div class="d-grid gap-1 d-md-flex">
-			    <a href="<?php echo $config['domain'] . '/dashboard.php?page=show'; ?>" class="btn btn-lg btn-secondary"><i class="bi bi-film"></i> Show</button>
-				<a href="<?php echo $config['domain'] . '/dashboard.php?page=token'; ?>" class="btn btn-lg btn-secondary"><i class="bi bi-receipt"></i> Token</button>
-				    <a href="<?php echo $config['domain'] . '/logout.php'; ?>" class="btn btn-lg btn-secondary"><i class="bi bi-box-arrow-right"></i> Logout</a>
+			    <a href="<?php echo $config['domain'] . '/dashboard.php?page=show'; ?>" class="btn btn-lg btn-secondary"><i class="bi bi-film"></i> Show</a>
+			    <a href="<?php echo $config['domain'] . '/dashboard.php?page=user'; ?>" class="btn btn-lg btn-secondary"><i class="bi bi-people"></i> Accounts</a>
+			    <a href="<?php echo $config['domain'] . '/dashboard.php?page=settings'; ?>" class="btn btn-lg btn-secondary"><i class="bi bi-gear"></i> Settings</a>
+			    <a href="<?php echo $config['domain'] . '/logout.php'; ?>" class="btn btn-lg btn-secondary"><i class="bi bi-box-arrow-right"></i> Logout</a>
 			</div>
 			
 		    </div>
@@ -129,8 +143,11 @@ if (isset($_GET['page'])) {
 			    case 'show':
 				require 'view/show.php';
 				break;
-			    case 'token':
-				require 'view/token.php';
+			    case 'user':
+				require 'view/user.php';
+				break;
+			    case 'settings':
+				require 'view/settings.php';
 				break;
 			    default:
 				require 'view/show.php';

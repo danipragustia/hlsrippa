@@ -10,19 +10,35 @@ if (isset($_SESSION['login'])) {
 if (isset($_POST['username'], $_POST['password'])) {
 
     // TODO: Using prepare PDO
-    $password_hash = $pdo->query('SELECT password FROM xezc_user WHERE username = "' . $_POST['username'] . '" LIMIT 1')->fetchColumn();
+    $user = $pdo->query('SELECT * FROM xezc_user WHERE username = "' . $_POST['username'] . '" LIMIT 1')->fetchAll(PDO::FETCH_ASSOC);
 
-    if (empty($password_hash)) {
+    if (!isset($user[0])) {
 	return_status([
 	    'status' => 1,
 	    'text' => 'Invalid username or password'
+	]);
+    } else {
+	$user = $user[0];
+    }
+    
+    $password_hash = $user['password'];
+
+    if ($user['level'] === 'Disable') {
+	return_status([
+	    'status' => 1,
+	    'text' => 'Account disabled by admin, please contact for more info.'
 	]);
     }
     
     if (password_verify($_POST['password'], $password_hash)) {
 	$_SESSION['login'] = true;
+	if ($user['level'] === 'User') {
+	    $_SESSION['user'] = $user['id'];
+	}
+
 	return_status([
-	    'status' => 0
+	    'status' => 0,
+	    'user' => (isset($_SESSION['user']) ? 1 : 0)
 	]);
     }
 
@@ -66,10 +82,6 @@ if (isset($_POST['username'], $_POST['password'])) {
 					</div>
 
 					<div class="d-flex align-items-center">
-					    <div class="form-check">
-						<input type="checkbox" name="remember" id="remember" class="form-check-input">
-						<label for="remember" class="form-check-label">Remember Me</label>
-					    </div>
 					    <button type="submit" class="btn btn-primary ms-auto">Login</button>
 					</div>
 
@@ -106,7 +118,11 @@ if (isset($_POST['username'], $_POST['password'])) {
 			 var data = JSON.parse(this.response);
 			 if (data.status == 0) {
 
-			     window.location.href = '<?php echo $config['domain']; ?>/dashboard.php';
+			     if (data.user == 0) {
+				 window.location.href = '<?php echo $config['domain']; ?>/dashboard.php';
+			     } else {
+				 window.location.href = '<?php echo $config['domain']; ?>/live.php';
+			     }
 			     
 			 } else {
 

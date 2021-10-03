@@ -3,61 +3,47 @@
 session_start();
 require_once 'hlsrippa.php';
 
-if (isset($_GET['id'])) {
-
+if (!isset($_SESSION['user'])) {
     if (!isset($_SESSION['login'])) {
-	header('Location:/invalid.php');
+	header('Location:' . $config['domain'] . '/login.php');
     }
-
-    $video_data = $pdo->query('SELECT * FROM bddv_show WHERE id = ' . intval($_GET['id']) . ' LIMIT 1')->fetch(PDO::FETCH_ASSOC);
-
-    $source = json_encode([
-	'type' => 'hls',
-	'file' => $config['domain'] . '/playlist.php?id=' . intval($_GET['id'])
-    ]);
-    
-} else {
-
-    if (isset($_GET['token'])) {
-	
-	$check_data = $pdo->query('SELECT * FROM bwca_token WHERE token = "' . $_GET['token'] . '" LIMIT 1')->fetch(PDO::FETCH_ASSOC);
-	
-	if (empty($check_data)) {
-	    header('Location:/invalid.php');
-	} else {
-	    
-	    $video_data = $pdo->query('SELECT * FROM bddv_show WHERE id = ' . intval($check_data['show']) . ' LIMIT 1')->fetch(PDO::FETCH_ASSOC);
-	    $source = json_encode([
-		'type' => 'hls',
-		'file' => $config['domain'] . '/playlist.php?id=' . intval($check_data['show'])
-	    ]);
-	    
-	}
-	
-    } else {
-	
-	if (!isset($_SESSION['login'])) {
-	    header('Location:/invalid.php');
-	}
-	
-    }
-
 }
 
-if (empty($video_data)) {
-    header('Location:/invalid.php');
+if (isset($_GET['id'])) {
+
+    $video_data = $pdo->query('SELECT * FROM bddv_show WHERE id = ' . intval($_GET['id']) . ' LIMIT 1')->fetch(PDO::FETCH_ASSOC);
+    $source = $config['domain'] . '/playlist.php?id=' . intval($_GET['id']);
+    
+} else {
+    header('Location:' . $config['domain'] . '/invalid.php');
+}
+
+if (!isset($video_data)) {
+    header('Location:' . $config['domain'] . '/invalid.php');
 }
 
 // Update Token Session
-$token_session = bin2hex(random_bytes(20));
-$pdo->query('UPDATE bwca_token SET cur_token = "' . $token_session . '" WHERE id = ' . intval($check_data['id']) . ' LIMIT 1');
-$_SESSION['token'] = $token_session;
+if (isset($_SESSION['user'])) {
+    $token_session = bin2hex(random_bytes(20));
+    if ($pdo->query('SELECT COUNT(id) FROM bwca_token WHERE `show` = ' . intval($video_data['id']) . ' AND user_id = ' . intval($_SESSION['user']) . ' LIMIT 1')->fetchColumn() === 1) {
+	$pdo->query('UPDATE bwca_token SET cur_token = "' . $token_session . '" WHERE `show` = ' . intval($video_data['id']) . ' AND user_id = ' . intval($_SESSION['user']) . ' LIMIT 1');
+    } else {
+	$insert_token = $pdo->prepare('INSERT INTO bwca_token (`show`, `cur_token`, `user_id` ) VALUES (?, ?, ?)')->execute([
+	    intval($_GET['id']),
+	    $token_session,
+	    intval($_SESSION['user'])
+	]);
+	if (!$insert_token) {
+	    header('Location:' . $config['domain'] . '/invalid.php');
+	}
+    }
+    $_SESSION['token'] = $token_session;
+}
 
 ?>
 <!DOCTYPE html>
 <html>
     <head>
-	<title><?php echo $video_data['nama']; ?> - HLSRipple</title>
 
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="robots" content="noindex">
@@ -71,26 +57,10 @@ $_SESSION['token'] = $token_session;
 	<link rel="stylesheet" href="assets/main.css">
 	<link rel="stylesheet" href="assets/bootstrap.min.css">
 	<link rel="stylesheet" href="assets/bootstrap-icons.css">
+	
+	<link rel="stylesheet" href="https://cdn.plyr.io/3.6.8/plyr.css">
 
-	<script type="text/javascript" src="https://ssl.p.jwpcdn.com/player/v/8.8.6/jwplayer.js"></script>
-	<script type="text/javascript">jwplayer.key="64HPbvSQorQcd52B8XFuhMtEoitbvY/EXJmMBfKcXZQU2Rnn";</script>
-
-	<script>
-	 #video-jwplayer_wrapper {
-	     position: relative;
-	     padding-bottom: 56.25%; /* 16:9 format */
-	     padding-top: 30px;
-	     height: 0;
-	     overflow: hidden;
-	 }
-	 #video-jwplayer_wrapper iframe, #video-jwplayer_wrapper object, #video-jwplayer_wrapper embed {
-	     position: absolute;
-	     top: 0;
-	     left: 0;
-	     width: 100%;
-	     height: 100%;
-	 }
-	</script>
+	<title><?php echo $video_data['nama']; ?> - HLSRipple</title>
 
     </head>
     <body>
@@ -100,13 +70,15 @@ $_SESSION['token'] = $token_session;
 	    <h1><?php echo $video_data['nama']; ?></h1>
 	    <hr>
 	    <div id="status" class="py-2"></div>
-	    <div id="tewi-player"></div>
+	    <video controls crossorigin playsinline id="tewi-player"></video>
 	    
 	</div>
 
+	<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+	<script src="https://cdn.plyr.io/3.6.8/plyr.js"></script>
 	<script>
 
-	 <?php if (!isset($_SESSION['login'])) { ?>
+	 <?php if (isset($_SESSION['user'])) { ?>
 
 	 var tolerance = 0;
 	 fetch_device();
@@ -166,27 +138,23 @@ $_SESSION['token'] = $token_session;
 	 }
 	 
 	 <?php } ?>
-	 
-	 var player=jwplayer("tewi-player");
-	 player.setup({
-	     sources: <?php echo $source; ?>,
-	     cast:{},
-	     width: "100%",
-	     aspectratio:"16:9",
-	     startparam:"start",
-	     primary:"html5",
-	     autostart:false,
-	     preload:"auto"
-	 });
-	 
-	 player.on("setupError",function() {
-	     swal("Server Error!", "Please contact us to fix it asap. Thank you!","error")
-	 });
-	 
-	 player.on("error",function() {
-	     swal("Server Error!", "Please contact us to fix it asap. Thank you!","error")
-	 });
 
+	 document.addEventListener('DOMContentLoaded', () => {
+	     const source = '<?php echo $source; ?>';
+	     const video = document.querySelector('#tewi-player');
+	     
+	     const player = new Plyr(video);
+	     
+	     if (!Hls.isSupported()) {
+		 video.src = source;
+	     } else {
+		 const hls = new Hls();
+		 hls.loadSource(source);
+		 hls.attachMedia(video);
+		 window.hls = hls;
+	     }
+	     
+	 });
 	 
 	</script>
     </body>

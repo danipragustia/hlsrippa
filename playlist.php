@@ -8,14 +8,12 @@ if (!isset($_GET['id'])) {
 require_once 'hlsrippa.php';
 session_start();
 
-if (!isset($_SESSION['login']) && !isset($_SESSION['token'])) {
-    http_response_code(403);
-    exit();
-}
+$use_token = false;
 
-if (intval($pdo->query('SELECT COUNT(id) FROM bwca_token WHERE cur_token = "' . $_SESSION['token'] . '"')->fetchColumn()) === 0) {
-    http_response_code(403);
-    exit();
+if (isset($_GET['token'])) {
+    if ($_GET['token'] === $config['stream_key']) {
+	$use_token = true;
+    }
 }
 
 $data = $pdo->query('SELECT * FROM bddv_show WHERE id = ' . intval($_GET['id']) . ' LIMIT 1')->fetch(PDO::FETCH_ASSOC);
@@ -81,7 +79,7 @@ if (count($playlist[1]) == count($playlist[2])) {
 
 	array_push($arr, [
 	    'direct' => $tmp2,
-	    'proxy' => $config['domain'] . '/' . (strpos($tmp2, '.m3u8') !== false ? 'playlist' : 'media') . '.php?data=' . base64_encode($target_url)
+	    'proxy' => $config['domain'] . '/' . (strpos($tmp2, '.m3u8') !== false ? 'playlist' : 'media') . '.php?data=' . base64_encode($target_url) .($use_token ? '&token=' . $config['stream_key'] : '')
 	]);
 	
     }
@@ -101,7 +99,7 @@ if (count($playlist[1]) == count($playlist[2])) {
 
     if (isset($key_preg[2][0])) {
 	
-	$data_out = str_replace($key_preg[2], $config['domain'] . '/key.php?id=' . intval($_GET['id']), $data_out);
+	$data_out = str_replace($key_preg[2], $config['domain'] . '/key.php?id=' . intval($_GET['id']) . ($use_token ? '&token=' . $config['stream_key'] : ''), $data_out);
 
     }
 
