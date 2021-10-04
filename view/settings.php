@@ -9,7 +9,7 @@ if ($note === false) {
 ?>
 <form method="POST">
 
-    <div id="status"><?php echo (isset($_SESSION['status']) ? '<div class="alert alert-success" role="alert">' . $_SESSION['status'] . '</div>' : ''); ?></div>
+    <div id="status"><?php echo (isset($_SESSION['status']) ? '<div class="alert alert-success" role="alert">' . $_SESSION['status'] . '</div>' : ''); unset($_SESSION['status']); ?></div>
     
     <div class="form-group my-2">
 	<label for="txtNote mb-3">Announcement (only visible on user)</label>

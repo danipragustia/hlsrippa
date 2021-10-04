@@ -18,11 +18,14 @@
 
 <div id="status" class="my-2"></div>
 
+<div class="my-2"><?php echo (isset($_SESSION['status']) ? '<div class="alert alert-success" role="alert">' . $_SESSION['status'] . '</div>' : ''); unset($_SESSION['status']); ?></div>
+
 <table class="table table-bordered">
     <thead>
 	<tr>
 	    <td>ID</td>
 	    <td>Username</td>
+	    <td>Level</td>
 	    <td>Aksi</td>
 	</tr>
     </thead>
@@ -56,7 +59,7 @@
 		     document.getElementById('table_body').innerHTML = '';
 		     data.data.forEach(function (ele) {
 
-			 document.getElementById('table_body').innerHTML += '<tr><td>' + ele.id + '</td><td>' + ele.username + '</td><td><button type="button" class="btn btn-sm btn-danger" data-id="' + ele.id  + '" name="btnHapus">Hapus</button></td></tr>';
+			 document.getElementById('table_body').innerHTML += '<tr><td>' + ele.id + '</td><td>' + ele.username + '</td><td>' + ele.level + '</td><td><a class="btn btn-sm btn-primary" href="dashboard.php?page=edit-user&id=' + ele.id + '">Edit</a> <button type="button" class="btn btn-sm btn-danger" data-id="' + ele.id  + '" name="btnHapus">Hapus</button></td></tr>';
 			 
 		     })
 

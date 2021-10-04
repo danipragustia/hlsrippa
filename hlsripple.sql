@@ -1,4 +1,4 @@
--- Adminer 4.8.0 MySQL 5.7.24 dump
+-- Adminer 4.8.0 MySQL 5.7.25 dump
 
 SET NAMES utf8;
 SET time_zone = '+00:00';
@@ -46,13 +46,12 @@ CREATE TABLE `xezc_user` (
   `id` int(12) NOT NULL AUTO_INCREMENT,
   `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `level` enum('Admin','User') NOT NULL DEFAULT 'User',
+  `level` enum('Admin','User','Disable') NOT NULL DEFAULT 'User',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 TRUNCATE `xezc_user`;
 INSERT INTO `xezc_user` (`id`, `username`, `password`, `level`) VALUES
-(1,	'mimin',	'$2y$10$XDqBRzrd/6/WK5ck890IwuzP50ArnbnWAQ8s2WC3PcrVN4.IulB/O',	'Admin'),
-(2,	'user',	'$2y$10$r4w8VKf2D5sFf6WWTXWvMOhxs4bQ/7rg0P/UQPUzAlci0s/dK40ZC',	'User');
+(1,	'mimin',	'$2y$10$XDqBRzrd/6/WK5ck890IwuzP50ArnbnWAQ8s2WC3PcrVN4.IulB/O',	'Admin');
 
--- 2021-10-03 13:04:55
+-- 2021-10-04 03:27:51

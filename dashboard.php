@@ -69,6 +69,33 @@ if (isset($_GET['page'])) {
 	
     }
 
+    if (isset($_POST['username'], $_POST['password'], $_POST['level'], $_GET['id']) && $_GET['page'] == 'edit-user') {
+
+	if (!empty($_POST['password'])) {
+	    $edit = $pdo->prepare('UPDATE xezc_user SET username = ?, password = ?, level = ? WHERE id = ? LIMIT 1')->execute([
+		$_POST['username'],
+		password_hash($_POST['password'], PASSWORD_DEFAULT),
+		$_POST['level'],
+		intval($_GET['id'])
+	    ]);
+	} else {
+	    $edit = $pdo->prepare('UPDATE xezc_user SET username = ?, level = ? WHERE id = ? LIMIT 1')->execute([
+		$_POST['username'],
+		$_POST['level'],
+		intval($_GET['id'])
+	    ]);
+	}
+
+	if ($edit) {
+	    $_SESSION['status'] = 'Success save account';
+	} else {
+	    $_SESSION['status'] = 'Failed when trying save account';
+	}
+
+	header('Location:' . $config['domain'] . '/dashboard.php?page=user');
+	
+    }
+
     // Settings
     if (isset($_POST['note']) && $_GET['page'] === 'settings') {
 	$update = $pdo->prepare('UPDATE wegy_settings SET value = ? WHERE item = ? LIMIT 1')->execute([
@@ -148,6 +175,9 @@ if (isset($_GET['page'])) {
 				break;
 			    case 'settings':
 				require 'view/settings.php';
+				break;
+			    case 'edit-user':
+				require 'view/edit-user.php';
 				break;
 			    default:
 				require 'view/show.php';
