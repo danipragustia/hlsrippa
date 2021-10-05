@@ -23,17 +23,18 @@
 </form>
 
 <div id="status" class="py-2"></div>
-
-<table class="table table-bordered">
-    <thead>
-	<tr>
-	    <td>Nama</td>
-	    <td>Link</td>
-	    <td>Aksi</td>
-	</tr>
-    </thead>
-    <tbody id="table_body"></tbody>
-</table>
+<div class="table-responsive">
+    <table class="table table-bordered">
+	<thead>
+	    <tr>
+		<td>Nama</td>
+		<td>Link</td>
+		<td>Aksi</td>
+	    </tr>
+	</thead>
+	<tbody id="table_body"></tbody>
+    </table>
+</div>
 <script>
 
  refresh_data();

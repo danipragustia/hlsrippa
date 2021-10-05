@@ -19,19 +19,20 @@
 <div id="status" class="my-2"></div>
 
 <div class="my-2"><?php echo (isset($_SESSION['status']) ? '<div class="alert alert-success" role="alert">' . $_SESSION['status'] . '</div>' : ''); unset($_SESSION['status']); ?></div>
-
-<table class="table table-bordered">
-    <thead>
-	<tr>
-	    <td>ID</td>
-	    <td>Username</td>
-	    <td>Level</td>
-	    <td>Aksi</td>
-	</tr>
-    </thead>
-    <tbody id="table_body">
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table table-bordered">
+	<thead>
+	    <tr>
+		<td>ID</td>
+		<td>Username</td>
+		<td>Level</td>
+		<td>Aksi</td>
+	    </tr>
+	</thead>
+	<tbody id="table_body">
+	</tbody>
+    </table>
+</div>
 <script>
 
  refresh_data();

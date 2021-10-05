@@ -63,37 +63,37 @@ if (!isset($_SESSION['user'])) {
 			echo '</div>';
 		    }
 		    ?>
+		    <div class="table-responsive">
+			<table class="table table-bordered">
+			    <thead>
+				<tr>
+				    <td>Nama</td>
+				    <td>Aksi</td>
+				</tr>
+			    </thead>
+			    <tbody>
+				<?php
 
-		    <table class="table table-bordered">
-			<thead>
-			    <tr>
-				<td>Nama</td>
-				<td>Aksi</td>
-			    </tr>
-			</thead>
-			<tbody>
-			    <?php
+				$data = $pdo->query('SELECT * FROM bddv_show')->fetchAll(PDO::FETCH_ASSOC);
 
-			    $data = $pdo->query('SELECT * FROM bddv_show')->fetchAll(PDO::FETCH_ASSOC);
+				if ($data !== false) {
 
-			    if ($data !== false) {
-
-				if (count($data) > 0) {
-				    array_map(function($x) {
-					echo '<tr>';
-					echo '<td>' . $x['nama'] . '</td>';
-					echo '<td><a class="btn btn-sm btn-success" href="show.php?id=' . intval($x['id']) . '">Go to show</a></td>';
-					echo '</tr>';
-				    }, $data);
-				} else {
-				    echo '<tr><td rowspan="2">Tidak ada show saat ini</td></tr>';
+				    if (count($data) > 0) {
+					array_map(function($x) {
+					    echo '<tr>';
+					    echo '<td>' . $x['nama'] . '</td>';
+					    echo '<td><a class="btn btn-sm btn-success" href="show.php?id=' . intval($x['id']) . '">Go to show</a></td>';
+					    echo '</tr>';
+					}, $data);
+				    } else {
+					echo '<tr><td rowspan="2">Tidak ada show saat ini</td></tr>';
+				    }
 				}
-			    }
 
-			    ?>
-			</tbody>
-		    </table>
-		    
+				?>
+			    </tbody>
+			</table>
+		    </div>
 		</div>
 
 	    </div>	    
