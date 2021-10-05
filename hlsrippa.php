@@ -6,7 +6,7 @@ $config = [
 ];
 
 try {
-    $pdo = new PDO('mysql:host=localhost;dbname=hlsrippa;charset=utf8', 'root', 'jaja');
+    $pdo = new PDO('mysql:host=localhost;dbname=hlsripple;charset=utf8', 'root', 'jaja');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 } catch (PDOException $exception) {

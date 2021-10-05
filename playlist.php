@@ -36,8 +36,12 @@ curl_setopt_array($ch, [
 $result = curl_exec($ch);
 curl_close($ch);
 
-preg_match_all($reg_playlist, $result, $playlist);
+if (empty($result)) {
+    http_response_code(403);
+    exit();
+}
 
+preg_match_all($reg_playlist, $result, $playlist);
 
 if (!count($playlist[1])) {
     preg_match_all($reg_ts, $result, $playlist);
@@ -87,6 +91,7 @@ if (count($playlist[1]) == count($playlist[2])) {
     // We start replace the string from m3u8
     
     $data_out = $result;
+
     foreach($arr as $x) {
 
 	$data_out = str_replace($x['direct'], $x['proxy'], $data_out);
