@@ -109,32 +109,32 @@ if (isset($_GET['data'])) {
 	    require_once 'VideoStream.php';
 	    $stream = new VideoStream($f_ts);
 	    $stream->start();
-	    
-	} else {
 
-	    header('Connection: keep-alive');
-	    header('Content-Type:video/MP2T');
-	    header('Content-Disposition: attachment; filename="0.ts"');
-
-	    $ch = curl_init('https://' . base64_decode($_GET['data']));
-	    curl_setopt_array($ch, [
-		CURLOPT_CONNECTTIMEOUT => 0,
-		CURLOPT_TIMEOUT => 1000, // 10 sec is safe bet
-		CURLOPT_RETURNTRANSFER => 1,
-		CURLOPT_FOLLOWLOCATION => 1,
-		CURLOPT_FRESH_CONNECT => 1,
-		CURLOPT_HEADER => 0
-	    ]);
-
-	    curl_setopt($ch, CURLOPT_WRITEFUNCTION, function($curl, $body) {
-		echo $body;
-		return strlen($body);
-	    });
-
-	    curl_exec($ch);
-	    
 	}
+	
+    } else {
 
+	header('Connection: keep-alive');
+	header('Content-Type:video/MP2T');
+	header('Content-Disposition: attachment; filename="0.ts"');
+
+	$ch = curl_init('https://' . base64_decode($_GET['data']));
+	curl_setopt_array($ch, [
+	    CURLOPT_CONNECTTIMEOUT => 0,
+	    CURLOPT_TIMEOUT => 1000, // 10 sec is safe bet
+	    CURLOPT_RETURNTRANSFER => 1,
+	    CURLOPT_FOLLOWLOCATION => 1,
+	    CURLOPT_FRESH_CONNECT => 1,
+	    CURLOPT_HEADER => 0
+	]);
+
+	curl_setopt($ch, CURLOPT_WRITEFUNCTION, function($curl, $body) {
+	    echo $body;
+	    return strlen($body);
+	});
+
+	curl_exec($ch);
+	
     }
 
 }
