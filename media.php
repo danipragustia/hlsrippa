@@ -42,7 +42,8 @@ if (isset($_GET['data'])) {
 	$f_tmp = bin2hex(random_bytes(20));
 	$tmp_path = 'tmp/' . $f_tmp;
 	$fp = fopen($tmp_path, 'w+');
-	if ($fp == FALSE) {
+	if ($fp === FALSE) {
+	    http_response_code(403);
 	    exit;
 	}
 	

@@ -18,25 +18,14 @@ if (isset($_GET['id'])) {
     header('Location:' . $config['domain'] . '/invalid.php');
 }
 
-if (!isset($video_data)) {
+if (!isset($video_data['nama'])) {
     header('Location:' . $config['domain'] . '/invalid.php');
 }
 
 // Update Token Session
 if (isset($_SESSION['user'])) {
     $token_session = bin2hex(random_bytes(20));
-    if ($pdo->query('SELECT COUNT(id) FROM bwca_token WHERE `show` = ' . intval($video_data['id']) . ' AND user_id = ' . intval($_SESSION['user']) . ' LIMIT 1')->fetchColumn() === 1) {
-	$pdo->query('UPDATE bwca_token SET cur_token = "' . $token_session . '" WHERE `show` = ' . intval($video_data['id']) . ' AND user_id = ' . intval($_SESSION['user']) . ' LIMIT 1');
-    } else {
-	$insert_token = $pdo->prepare('INSERT INTO bwca_token (`show`, `cur_token`, `user_id` ) VALUES (?, ?, ?)')->execute([
-	    intval($_GET['id']),
-	    $token_session,
-	    intval($_SESSION['user'])
-	]);
-	if (!$insert_token) {
-	    header('Location:' . $config['domain'] . '/invalid.php');
-	}
-    }
+    $pdo->query('UPDATE xezc_user SET cur_token = "' . $token_session . '" WHERE id = ' . intval($_SESSION['user']) . ' LIMIT 1');
     $_SESSION['token'] = $token_session;
 }
 
@@ -148,7 +137,10 @@ if (isset($_SESSION['user'])) {
 	     if (!Hls.isSupported()) {
 		 video.src = source;
 	     } else {
-		 const hls = new Hls();
+		 const hls = new Hls({
+		     maxBufferSize: 1 * 1000 * 1000,
+		     backBufferLength: 0
+		 });
 		 hls.loadSource(source);
 		 hls.attachMedia(video);
 		 window.hls = hls;

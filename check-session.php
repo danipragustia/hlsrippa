@@ -1,8 +1,10 @@
 <?php
 
 require_once('hlsrippa.php');
+session_start();
+
 if (isset($_POST['session'])) {
-    if (intval($pdo->query('SELECT COUNT(id) FROM bwca_token WHERE cur_token = "' . $_POST['session'] . '"')->fetchColumn()) === 0) {
+    if (intval($pdo->query('SELECT COUNT(id) FROM xezc_user WHERE cur_token = "' . $_POST['session'] . '" AND id = ' . intval($_SESSION['user']))->fetchColumn()) === 0) {
 	return_status([
 	    'status' => 1,
 	    'text' => 'Session hanya berlaku 1 device'

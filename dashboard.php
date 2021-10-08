@@ -102,6 +102,11 @@ if (isset($_GET['page'])) {
 	    $_POST['note'],
 	    'note'
 	]);
+
+	$update = $pdo->prepare('UPDATE wegy_settings SET value = ? WHERE item = ? LIMIT 1')->execute([
+	    $_POST['cache_time'],
+	    'cache_time'
+	]);
 	
 	if ($update) {
 	    $_SESSION['status'] = 'Success save settings';
