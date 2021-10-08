@@ -7,6 +7,10 @@ if (!isset($_SESSION['login'])) {
     header('Location:' . $config['domain'] . '/login.php');
 }
 
+if (isset($_SESSION['user'])) {
+    header('Location:' . $config['domain'] . '/live.php');
+}
+
 // Dashboard CRUD
 if (isset($_GET['page'])) {
 
