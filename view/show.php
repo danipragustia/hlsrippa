@@ -28,7 +28,6 @@
 	<thead>
 	    <tr>
 		<td>Nama</td>
-		<td>Link</td>
 		<td>Aksi</td>
 	    </tr>
 	</thead>
@@ -59,7 +58,7 @@
 		     document.getElementById('table_body').innerHTML = '';
 		     data.data.forEach(function (ele) {
 
-			 document.getElementById('table_body').innerHTML += '<tr><td>' + ele.nama + '</td><td>' + ele.m3u8 + '</td><td><a href="show.php?id=' + ele.id + '" target="_blank" class="btn btn-sm btn-primary">Show</a> <a target="_blank" class="btn btn-sm btn-success" href="<?php echo $config['domain']; ?>/playlist.php?id=' + ele.id + '&token=<?php echo $config['stream_key']; ?>">Get m3u8</a> <button type="button" class="btn btn-sm btn-danger" data-id="' + ele.id  + '" name="btnHapus">Hapus</button></td></tr>';
+			 document.getElementById('table_body').innerHTML += '<tr><td>' + ele.nama + '</td><td><a href="show.php?id=' + ele.id + '" target="_blank" class="btn btn-sm btn-primary">Show</a> <a target="_blank" class="btn btn-sm btn-success" href="<?php echo $config['domain']; ?>/playlist.php?id=' + ele.id + '&token=<?php echo $config['stream_key']; ?>">Get m3u8</a> <button type="button" class="btn btn-sm btn-danger" data-id="' + ele.id  + '" name="btnHapus">Hapus</button></td></tr>';
 			 
 		     })
 
